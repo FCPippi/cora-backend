@@ -1,17 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Post,
-} from '@nestjs/common';
+import { Controller, Delete, Get, HttpStatus, Param } from '@nestjs/common';
 import { BoilerplateService } from './boilerplate.service';
 // import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 // import { IsPublic } from '../auth/decorators/isPublic.decorator';
 import { User } from '@prisma/client';
-import { BoilerplateUserDto } from './dtos/boilerplate-user.dto';
 
 // @ApiTags('Boilerplates') // Swagger Tag
 // @ApiBearerAuth('Authorization') // Swagger Bearer Auth
