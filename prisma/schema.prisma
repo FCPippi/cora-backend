@@ -16,6 +16,7 @@ model user {
   email        String    @unique
   password     String
   user_type    String
+  avatar       String
   join_date    DateTime
 
 
@@ -24,8 +25,7 @@ model user {
   replies       reply[]
   questions     question[]
   modules       module[] @relation("user_modules")
-  profile       specialist_profile? @relation(fields: [specialist_id], references: [id_specialist])
-  specialist_id Int? @unique
+  profile       specialist_profile?
 }
 
 model child {
@@ -57,7 +57,7 @@ model question {
   title         String
   text          String
   creation_date DateTime @default(now())
-  keywords      String?
+  keywords      String
   is_anonymous  Boolean  @default(false)
 
   // Relações
@@ -70,7 +70,7 @@ model module {
   id_module     Int      @id @default(autoincrement())
   title         String
   sinopsys      String
-  thumbnail     String?
+  thumbnail     String
   creation_date DateTime @default(now())
   views         Int      @default(0)
   age_group     String
@@ -83,9 +83,9 @@ model module {
 
 model content {
   id_content  Int      @id @default(autoincrement())
-  text        String
+  text        String?
   image       String?
-  template    String?
+  template    String
   video_link  String?
 
   module_id Int
@@ -95,9 +95,10 @@ model content {
 model specialist_profile {
   id_specialist  Int     @id @default(autoincrement())
   specialty      String
-  photo          String?
-  bio            String?
+  photo          String
+  description    String
   council_number String
 
-  user user?
+  user_id    Int  @unique
+  user       user @relation(fields: [user_id], references: [id_user])
 }
