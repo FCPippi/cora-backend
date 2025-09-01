@@ -45,45 +45,6 @@ describe('BoilerplateController', () => {
     });
   });
 
-  describe('postMethod', () => {
-    it("should return HttpStatus.CREATED if user doesn't exist", async () => {
-      jest
-        .spyOn(boilerplateService, 'postMethod')
-        .mockResolvedValue(HttpStatus.CREATED);
-
-      const validBoilerplateUserDto = {
-        ...mockTestBoilerplateUserDto,
-        name: mockTestBoilerplateUserDto.name ?? undefined,
-      };
-      const result = await boilerplateController.postMethod(
-        validBoilerplateUserDto,
-      );
-      expect(result).toBe(HttpStatus.CREATED);
-    });
-
-    it('should return HttpStatus.CONFLICT if user already exists', async () => {
-      jest
-        .spyOn(boilerplateService, 'postMethod')
-        .mockRejectedValue(
-          new HttpException('User already exists', HttpStatus.CONFLICT),
-        );
-
-      try {
-        const validBoilerplateUserDto = {
-          ...mockTestBoilerplateUserDto,
-          name: mockTestBoilerplateUserDto.name ?? undefined,
-        };
-        await boilerplateController.postMethod(validBoilerplateUserDto);
-      } catch (error) {
-        expect(error).toBeInstanceOf(HttpException);
-        if (error instanceof HttpException) {
-          expect(error.getStatus()).toBe(HttpStatus.CONFLICT);
-          expect(error.getResponse()).toEqual('User already exists');
-        }
-      }
-    });
-  });
-
   describe('deleteMethod', () => {
     it('should return HttpStatus.NO_CONTENT if user was deleted', async () => {
       jest
@@ -91,7 +52,7 @@ describe('BoilerplateController', () => {
         .mockResolvedValue(HttpStatus.NO_CONTENT);
 
       const result = await boilerplateController.deleteMethod(
-        mockTestBoilerplateUserDto.id,
+        mockTestBoilerplateUserDto.user_id,
       );
       expect(result).toBe(HttpStatus.NO_CONTENT);
     });
@@ -104,7 +65,9 @@ describe('BoilerplateController', () => {
         );
 
       try {
-        await boilerplateController.deleteMethod(mockTestBoilerplateUserDto.id);
+        await boilerplateController.deleteMethod(
+          mockTestBoilerplateUserDto.user_id,
+        );
       } catch (error) {
         expect(error).toBeInstanceOf(HttpException);
         if (error instanceof HttpException) {

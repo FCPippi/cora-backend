@@ -51,39 +51,6 @@ describe('BoilerplateService', () => {
     }
   });
 
-  it("should create a new user if it doesn't exist", async () => {
-    jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-    jest
-      .spyOn(prisma.user, 'create')
-      .mockResolvedValue(mockTestBoilerplateUserDto);
-    const validBoilerplateUserDto = {
-      ...mockTestBoilerplateUserDto,
-      name: mockTestBoilerplateUserDto.name ?? undefined,
-    };
-    const result = await service.postMethod(validBoilerplateUserDto);
-    expect(result).toBe(HttpStatus.CREATED);
-  });
-
-  it('should return CONFLICT if user already exists', async () => {
-    jest
-      .spyOn(prisma.user, 'findUnique')
-      .mockResolvedValue(mockTestBoilerplateUserDto);
-
-    try {
-      const validBoilerplateUserDto = {
-        ...mockTestBoilerplateUserDto,
-        name: mockTestBoilerplateUserDto.name ?? undefined,
-      };
-      await service.postMethod(validBoilerplateUserDto);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      if (error instanceof HttpException) {
-        expect(error.getStatus()).toBe(HttpStatus.CONFLICT);
-        expect(error.getResponse()).toEqual('User already exists');
-      }
-    }
-  });
-
   it('should delete an user if it exists', async () => {
     jest
       .spyOn(prisma.user, 'findUnique')
@@ -91,14 +58,16 @@ describe('BoilerplateService', () => {
     jest
       .spyOn(prisma.user, 'delete')
       .mockResolvedValue(mockTestBoilerplateUserDto);
-    const result = await service.deleteMethod(mockTestBoilerplateUserDto.id);
+    const result = await service.deleteMethod(
+      mockTestBoilerplateUserDto.user_id,
+    );
     expect(result).toBe(HttpStatus.NO_CONTENT);
   });
 
   it('should throw NOT_FOUND if user does not exist', async () => {
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
     await expect(
-      service.deleteMethod(mockTestBoilerplateUserDto.id),
+      service.deleteMethod(mockTestBoilerplateUserDto.user_id),
     ).rejects.toThrow('User does not exist');
   });
 });

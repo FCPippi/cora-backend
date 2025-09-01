@@ -2,20 +2,101 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    name      String?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  user_id          String    @id @default(uuid())
+  name             String
+  email            String    @unique
+  password         String
+  user_type        String
+  profile_picture  String
+  creation_date    DateTime  @default(now())
 
-    @@map("users")
+  // Relações
+  children      Child[]
+  replies       Reply[]
+  questions     Question[]
+  modules       Module[]
+  profile       SpecialistProfile?
+}
+
+model Child {
+  child_id   String     @id @default(uuid())
+  name       String
+  birth_date DateTime
+  age_group  String
+
+  // Relações
+  parent_id    String
+  user       User @relation(fields: [parent_id], references: [user_id])
+}
+
+model Reply {
+  reply_id      String   @id @default(uuid())
+  text          String
+  is_anonymous  Boolean  @default(false)
+  creation_date DateTime @default(now())
+
+  // Relações
+  user_id      String
+  user         User    @relation(fields: [user_id], references: [user_id])
+  question_id  String
+  question     Question @relation(fields: [question_id], references: [id_question])
+}
+
+model Question {
+  id_question   String   @id @default(uuid())
+  title         String
+  text          String
+  creation_date DateTime @default(now())
+  keywords      String[]
+  is_anonymous  Boolean  @default(false)
+
+  // Relações
+  user_id  String
+  user     User    @relation(fields: [user_id], references: [user_id])
+  replies  Reply[]
+}
+
+model Module {
+  module_id     String   @id @default(uuid())
+  title         String
+  sinopsys      String
+  thumbnail     String
+  creation_date DateTime @default(now())
+  views         Int      @default(0)
+  age_group     String
+  updatedAt     DateTime @updatedAt
+
+  // Relações
+  user_id  String
+  user     User @relation(fields: [user_id], references: [user_id])
+  contents Content[]
+}
+
+model Content {
+  content_id  String      @id @default(uuid())
+  text        String?
+  image       String?
+  template    String
+  video_link  String?
+
+  module_id String
+  module    Module @relation(fields: [module_id], references: [module_id])
+}
+
+model SpecialistProfile {
+  specialist_id  String    @id
+  specialty      String
+  description    String
+  council_number String
+
+  user       User @relation(fields: [specialist_id], references: [user_id])
 }
