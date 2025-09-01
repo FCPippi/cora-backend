@@ -20,34 +20,38 @@ export class BoilerplateService {
     return users;
   }
 
-  async postMethod({ name, email }: BoilerplateUserDto): Promise<HttpStatus> {
-    let user: User | null = await this.prisma.user.findUnique({
-      where: { email },
-    });
+  // async postMethod({ name, email }: BoilerplateUserDto): Promise<HttpStatus> {
+  //   if (!name || !email) {
+  //     throw new HttpException('Name and email are required', HttpStatus.BAD_REQUEST);
+  //   }
 
-    if (user) {
-      throw new HttpException('User already exists', HttpStatus.CONFLICT);
-    }
+  //   let user: User | null = await this.prisma.user.findUnique({
+  //     where: { email },
+  //   });
 
-    user = await this.prisma.user.create({
-      data: {
-        name,
-        email,
-      },
-    });
+  //   if (user) {
+  //     throw new HttpException('User already exists', HttpStatus.CONFLICT);
+  //   }
 
-    return HttpStatus.CREATED;
-  }
+  //   user = await this.prisma.user.create({
+  //     data: {
+  //       name,
+  //       email,
+  //     },
+  //   });
+
+  //   return HttpStatus.CREATED;
+  // }
 
   async deleteMethod(id: string): Promise<HttpStatus> {
     const user = await this.prisma.user.findUnique({
-      where: { id: id },
+      where: { user_id: id },
     });
     if (!user) {
       throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
     }
     await this.prisma.user.delete({
-      where: { id: id },
+      where: { user_id: id },
     });
     return HttpStatus.NO_CONTENT;
   }
