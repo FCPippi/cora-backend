@@ -30,12 +30,6 @@ export class BoilerplateController {
     return await this.boilerplateService.getMethod();
   }
 
-  //   @IsPublic() // Does not require authentication
-  @Post('/createUser') // Route for this post request
-  async postMethod(@Body() user: BoilerplateUserDto): Promise<HttpStatus> {
-    return await this.boilerplateService.postMethod(user);
-  }
-
   @Delete('/delete/:id') // Route for this delete request
   async deleteMethod(@Param('id') id: string): Promise<HttpStatus> {
     return await this.boilerplateService.deleteMethod(id);
