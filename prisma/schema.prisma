@@ -2,12 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -17,5 +17,85 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@map("users")
+  // Relações
+  children      child[]
+  replies       reply[]
+  questions     question[]
+  modules       module[] @relation("user_modules")
+  profile       specialist_profile? @relation(fields: [specialist_id], references: [id_specialist])
+  specialist_id Int? @unique
+}
+
+model child {
+  id_child   Int      @id @default(autoincrement())
+  name       String
+  birth_date DateTime
+  age_group  String
+
+  // Relações
+  user_id    Int
+  user       user @relation(fields: [user_id], references: [id_user])
+}
+
+model reply {
+  id_reply      Int      @id @default(autoincrement())
+  text          String
+  is_anonymous  Boolean  @default(false)
+  creation_date DateTime @default(now())
+
+  // Relações
+  user_id      Int
+  user         user    @relation(fields: [user_id], references: [id_user])
+  question_id  Int
+  question     question @relation(fields: [question_id], references: [id_question])
+}
+
+model question {
+  id_question   Int      @id @default(autoincrement())
+  title         String
+  text          String
+  creation_date DateTime @default(now())
+  keywords      String?
+  is_anonymous  Boolean  @default(false)
+
+  // Relações
+  user_id  Int
+  user     user    @relation(fields: [user_id], references: [id_user])
+  replies  reply[]
+}
+
+model module {
+  id_module     Int      @id @default(autoincrement())
+  title         String
+  sinopsys      String
+  thumbnail     String?
+  creation_date DateTime @default(now())
+  views         Int      @default(0)
+  age_group     String
+
+  // Relações
+  user_id  Int
+  user     user @relation("user_modules", fields: [user_id], references: [id_user])
+  contents content[]
+}
+
+model content {
+  id_content  Int      @id @default(autoincrement())
+  text        String
+  image       String?
+  template    String?
+  video_link  String?
+
+  module_id Int
+  module    module @relation(fields: [module_id], references: [id_module])
+}
+
+model specialist_profile {
+  id_specialist  Int     @id @default(autoincrement())
+  specialty      String
+  photo          String?
+  bio            String?
+  council_number String
+
+  user user?
 }
