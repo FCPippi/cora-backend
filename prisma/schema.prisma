@@ -18,6 +18,7 @@ model user {
   user_type    String
   join_date    DateTime
 
+
   // Relações
   children      child[]
   replies       reply[]
