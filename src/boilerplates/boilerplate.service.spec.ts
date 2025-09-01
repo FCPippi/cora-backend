@@ -58,7 +58,9 @@ describe('BoilerplateService', () => {
     jest
       .spyOn(prisma.user, 'delete')
       .mockResolvedValue(mockTestBoilerplateUserDto);
-    const result = await service.deleteMethod(mockTestBoilerplateUserDto.user_id);
+    const result = await service.deleteMethod(
+      mockTestBoilerplateUserDto.user_id,
+    );
     expect(result).toBe(HttpStatus.NO_CONTENT);
   });
 

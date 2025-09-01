@@ -65,7 +65,9 @@ describe('BoilerplateController', () => {
         );
 
       try {
-        await boilerplateController.deleteMethod(mockTestBoilerplateUserDto.user_id);
+        await boilerplateController.deleteMethod(
+          mockTestBoilerplateUserDto.user_id,
+        );
       } catch (error) {
         expect(error).toBeInstanceOf(HttpException);
         if (error instanceof HttpException) {
