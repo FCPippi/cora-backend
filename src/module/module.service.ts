@@ -1,20 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Module } from '@prisma/client';
+
 @Injectable()
 export class ModuleService {
   constructor(private prisma: PrismaService) {}
 
-  create(createModuleDto: CreateModuleDto) {
+  async create(createModuleDto: CreateModuleDto): Promise<Module> {
     return this.prisma.module.create({
       data: {
-        name: createModuleDto.name,
-        description: createModuleDto.description,
+        title: createModuleDto.title,
+        sinopsys: createModuleDto.sinopsys,
+        thumbnail: createModuleDto.thumbnail,
+        age_group: createModuleDto.age_group,
+        user_id: 'temp-user-id',
       },
     });
   }
 
-  findAll() {
+  async findAll(): Promise<Module[]> {
     return this.prisma.module.findMany();
   }
 }
