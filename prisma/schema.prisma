@@ -11,98 +11,92 @@ datasource db {
 }
 
 model User {
-  user_id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-    id        String   @id @default(uuid())
-    email     String   @unique
-    name      String?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
+  user_id          String    @id @default(uuid())
+  name             String
+  email            String    @unique
+  password         String
+  user_type        String
+  profile_picture  String
+  creation_date    DateTime  @default(now())
 
   // Relações
-  children      child[]
-  replies       reply[]
-  questions     question[]
-  modules       module[] @relation("user_modules")
-  profile       specialist_profile? @relation(fields: [specialist_id], references: [id_specialist])
-  specialist_id Int? @unique
+  children      Child[]
+  replies       Reply[]
+  questions     Question[]
+  modules       Module[]
+  profile       SpecialistProfile?
 }
 
-model child {
-  id_child   Int      @id @default(autoincrement())
+model Child {
+  child_id   String     @id @default(uuid())
   name       String
   birth_date DateTime
   age_group  String
 
   // Relações
-  user_id    Int
-  user       User @relation(fields: [user_id], references: [id_user])
+  parent_id    String
+  user       User @relation(fields: [parent_id], references: [user_id])
 }
 
-model reply {
-  id_reply      Int      @id @default(autoincrement())
+model Reply {
+  reply_id      String   @id @default(uuid())
   text          String
   is_anonymous  Boolean  @default(false)
   creation_date DateTime @default(now())
 
   // Relações
-  user_id      Int
-  user         User    @relation(fields: [user_id], references: [id_user])
-  question_id  Int
-  question     question @relation(fields: [question_id], references: [id_question])
+  user_id      String
+  user         User    @relation(fields: [user_id], references: [user_id])
+  question_id  String
+  question     Question @relation(fields: [question_id], references: [id_question])
 }
 
-model question {
-  id_question   Int      @id @default(autoincrement())
+model Question {
+  id_question   String   @id @default(uuid())
   title         String
   text          String
   creation_date DateTime @default(now())
-  keywords      String?
+  keywords      String[]
   is_anonymous  Boolean  @default(false)
 
   // Relações
-  user_id  Int
-  user     User    @relation(fields: [user_id], references: [id_user])
-  replies  reply[]
+  user_id  String
+  user     User    @relation(fields: [user_id], references: [user_id])
+  replies  Reply[]
 }
 
-model module {
-  id_module     Int      @id @default(autoincrement())
+model Module {
+  module_id     String   @id @default(uuid())
   title         String
   sinopsys      String
-  thumbnail     String?
+  thumbnail     String
   creation_date DateTime @default(now())
   views         Int      @default(0)
   age_group     String
+  updatedAt     DateTime @updatedAt
 
   // Relações
-  user_id  Int
-  user     User @relation("user_modules", fields: [user_id], references: [id_user])
-  contents content[]
+  user_id  String
+  user     User @relation(fields: [user_id], references: [user_id])
+  contents Content[]
 }
 
-model content {
-  id_content  Int      @id @default(autoincrement())
-  text        String
+model Content {
+  content_id  String      @id @default(uuid())
+  text        String?
   image       String?
-  template    String?
+  template    String
   video_link  String?
 
-  module_id Int
-  module    module @relation(fields: [module_id], references: [id_module])
+  module_id String
+  module    Module @relation(fields: [module_id], references: [module_id])
 }
 
-model specialist_profile {
-  id_specialist  Int     @id @default(autoincrement())
+model SpecialistProfile {
+  specialist_id  String    @id
   specialty      String
-  photo          String?
-  bio            String?
+  description    String
   council_number String
 
-  user User?
+  user       User @relation(fields: [specialist_id], references: [user_id])
 }
