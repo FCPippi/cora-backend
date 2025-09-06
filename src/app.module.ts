@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
-import { ModuleModule } from './module/module.module';
 import { BoilerplateModule } from './boilerplates/boilerplate.module';
 
 @Module({
@@ -10,7 +9,6 @@ import { BoilerplateModule } from './boilerplates/boilerplate.module';
       isGlobal: true,
     }),
     PrismaModule,
-    ModuleModule,
     BoilerplateModule,
   ],
 })
