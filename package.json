@@ -1,5 +1,5 @@
 {
-  "name": "cora-backend",
+  "name": "ProjetoCora",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -33,7 +33,6 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
-    "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.13.0",
     "class-transformer": "^0.5.1",
@@ -82,9 +81,6 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/$1"
-    }
+    "testEnvironment": "node"
   }
 }

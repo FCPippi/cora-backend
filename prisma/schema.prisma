@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,27 +11,31 @@ datasource db {
 }
 
 model User {
-  user_id         String             @id @default(uuid())
-  name            String
-  email           String             @unique
-  password        String
-  user_type       String
-  profile_picture String
-  creation_date   DateTime           @default(now())
-  children        Child[]
-  modules         Module[]
-  questions       Question[]
-  replies         Reply[]
-  profile         SpecialistProfile?
+  user_id          String    @id @default(uuid())
+  name             String
+  email            String    @unique
+  password         String
+  user_type        String
+  profile_picture  String
+  creation_date    DateTime  @default(now())
+
+  // Relações
+  children      Child[]
+  replies       Reply[]
+  questions     Question[]
+  modules       Module[]
+  profile       SpecialistProfile?
 }
 
 model Child {
-  child_id   String   @id @default(uuid())
+  child_id   String     @id @default(uuid())
   name       String
   birth_date DateTime
   age_group  String
-  parent_id  String
-  user       User     @relation(fields: [parent_id], references: [user_id])
+
+  // Relações
+  parent_id    String
+  user       User @relation(fields: [parent_id], references: [user_id])
 }
 
 model Reply {
@@ -36,10 +43,12 @@ model Reply {
   text          String
   is_anonymous  Boolean  @default(false)
   creation_date DateTime @default(now())
-  user_id       String
-  question_id   String
-  question      Question @relation(fields: [question_id], references: [id_question])
-  user          User     @relation(fields: [user_id], references: [user_id])
+
+  // Relações
+  user_id      String
+  user         User    @relation(fields: [user_id], references: [user_id])
+  question_id  String
+  question     Question @relation(fields: [question_id], references: [id_question])
 }
 
 model Question {
@@ -49,39 +58,45 @@ model Question {
   creation_date DateTime @default(now())
   keywords      String[]
   is_anonymous  Boolean  @default(false)
-  user_id       String
-  user          User     @relation(fields: [user_id], references: [user_id])
-  replies       Reply[]
+
+  // Relações
+  user_id  String
+  user     User    @relation(fields: [user_id], references: [user_id])
+  replies  Reply[]
 }
 
 model Module {
-  module_id     String    @id @default(uuid())
+  module_id     String   @id @default(uuid())
   title         String
   sinopsys      String
   thumbnail     String
-  creation_date DateTime  @default(now())
-  views         Int       @default(0)
+  creation_date DateTime @default(now())
+  views         Int      @default(0)
   age_group     String
-  updatedAt     DateTime  @updatedAt
-  user_id       String
-  contents      Content[]
-  user          User      @relation(fields: [user_id], references: [user_id])
+  updatedAt     DateTime @updatedAt
+
+  // Relações
+  user_id  String
+  user     User @relation(fields: [user_id], references: [user_id])
+  contents Content[]
 }
 
 model Content {
-  content_id String  @id @default(uuid())
-  text       String?
-  image      String?
-  template   String
-  video_link String?
-  module_id  String
-  module     Module  @relation(fields: [module_id], references: [module_id])
+  content_id  String      @id @default(uuid())
+  text        String?
+  image       String?
+  template    String
+  video_link  String?
+
+  module_id String
+  module    Module @relation(fields: [module_id], references: [module_id])
 }
 
 model SpecialistProfile {
-  specialist_id  String @id
+  specialist_id  String    @id
   specialty      String
   description    String
   council_number String
-  user           User   @relation(fields: [specialist_id], references: [user_id])
+
+  user       User @relation(fields: [specialist_id], references: [user_id])
 }
