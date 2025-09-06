@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModuleController } from './module.controller';
 import { ModuleService } from './module.service';
+import { UnauthorizedException, HttpException } from '@nestjs/common';
 import { mockCreateModuleDto, mockModule, mockModules } from './module.mock';
 
 describe('ModuleController', () => {
@@ -34,32 +35,58 @@ describe('ModuleController', () => {
   });
 
   describe('create', () => {
+    const userId = 'test-user-id';
+
     it('should create a module successfully', async () => {
       // Arrange
       mockModuleService.create.mockResolvedValue(mockModule);
 
       // Act
-      const result = await controller.create(mockCreateModuleDto);
+      const result = await controller.create(mockCreateModuleDto, userId);
 
       // Assert
       expect(result).toEqual(mockModule);
       expect(mockModuleService.create).toHaveBeenCalledWith(
         mockCreateModuleDto,
+        userId,
       );
       expect(mockModuleService.create).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw an error if service create fails', async () => {
+    it('should throw UnauthorizedException when userId is not provided', async () => {
+      // Act & Assert
+      await expect(
+        controller.create(mockCreateModuleDto, undefined),
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        controller.create(mockCreateModuleDto, undefined),
+      ).rejects.toThrow('User ID is required in x-user-id header');
+      expect(mockModuleService.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException when userId is empty string', async () => {
+      // Act & Assert
+      await expect(controller.create(mockCreateModuleDto, '')).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.create(mockCreateModuleDto, '')).rejects.toThrow(
+        'User ID is required in x-user-id header',
+      );
+      expect(mockModuleService.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw HttpException if service create fails', async () => {
       // Arrange
-      const error = new Error('Service error');
-      mockModuleService.create.mockRejectedValue(error);
+      const serviceError = new Error('Service error');
+      mockModuleService.create.mockRejectedValue(serviceError);
 
       // Act & Assert
-      await expect(controller.create(mockCreateModuleDto)).rejects.toThrow(
-        error,
-      );
+      await expect(
+        controller.create(mockCreateModuleDto, userId),
+      ).rejects.toThrow(HttpException);
       expect(mockModuleService.create).toHaveBeenCalledWith(
         mockCreateModuleDto,
+        userId,
       );
       expect(mockModuleService.create).toHaveBeenCalledTimes(1);
     });
@@ -91,13 +118,13 @@ describe('ModuleController', () => {
       expect(mockModuleService.findAll).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw an error if service findAll fails', async () => {
+    it('should throw HttpException if service findAll fails', async () => {
       // Arrange
-      const error = new Error('Service error');
-      mockModuleService.findAll.mockRejectedValue(error);
+      const serviceError = new Error('Service error');
+      mockModuleService.findAll.mockRejectedValue(serviceError);
 
       // Act & Assert
-      await expect(controller.findAll()).rejects.toThrow(error);
+      await expect(controller.findAll()).rejects.toThrow(HttpException);
       expect(mockModuleService.findAll).toHaveBeenCalledTimes(1);
     });
   });
