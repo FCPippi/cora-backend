@@ -3,6 +3,7 @@ import { ModuleService } from './module.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   mockModule,
+  mockModuleCardResponseDto,
   mockModuleResponseDto,
   mockModuleResponseNoContentsDto,
 } from './module.mock';
@@ -14,6 +15,7 @@ describe('ModuleService', () => {
   const mockPrismaService = {
     module: {
       findUnique: jest.fn(),
+      findMany: jest.fn(),
     },
     content: {
       findMany: jest.fn(),
@@ -91,6 +93,66 @@ describe('ModuleService', () => {
         where: { module_id: moduleId },
       });
       expect(mockPrismaService.content.findMany).not.toHaveBeenCalled();
+    });
+  });
+  describe('searchModuleByKeyword', () => {
+    it('should return all modules that contain the keyword', async () => {
+      const keyword = 'criatividade';
+      const mockModules = [
+        {
+          module_id: mockModule.module_id,
+          title: mockModule.title,
+          sinopsys: mockModule.sinopsys,
+          thumbnail: mockModule.thumbnail,
+          age_group: mockModule.age_group,
+        },
+      ];
+      const expectedResponse = [mockModuleCardResponseDto];
+
+      mockPrismaService.module.findMany.mockResolvedValue(mockModules);
+
+      const result = await service.searchModuleByKeyword(keyword);
+
+      expect(result).toEqual(expectedResponse);
+      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { title: { contains: keyword, mode: 'insensitive' } },
+            { sinopsys: { contains: keyword, mode: 'insensitive' } },
+          ],
+        },
+        select: {
+          module_id: true,
+          title: true,
+          thumbnail: true,
+          sinopsys: true,
+          age_group: true,
+        },
+      });
+    });
+
+    it('should return an empty array if no modules match the keyword', async () => {
+      const keyword = 'nonexistent';
+      mockPrismaService.module.findMany.mockResolvedValue([]);
+
+      const result = await service.searchModuleByKeyword(keyword);
+
+      expect(result).toEqual([]);
+      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { title: { contains: keyword, mode: 'insensitive' } },
+            { sinopsys: { contains: keyword, mode: 'insensitive' } },
+          ],
+        },
+        select: {
+          module_id: true,
+          title: true,
+          thumbnail: true,
+          sinopsys: true,
+          age_group: true,
+        },
+      });
     });
   });
 });

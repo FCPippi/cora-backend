@@ -8,3 +8,25 @@ export class ModuleResponseDto {
 
   contents: ContentResponseDto[];
 }
+
+export class ModuleCardResponseDto {
+  @IsString()
+  @IsNotEmpty()
+  module_id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  sinopsys: string;
+
+  @IsString()
+  @IsNotEmpty()
+  thumbnail: string;
+
+  @IsString()
+  @IsNotEmpty()
+  age_group: string;
+}
