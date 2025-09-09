@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { BoilerplateModule } from './boilerplates/boilerplate.module';
+import { ModuleModule } from './module/module.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { BoilerplateModule } from './boilerplates/boilerplate.module';
     }),
     PrismaModule,
     BoilerplateModule,
+    ModuleModule,
   ],
 })
 export class AppModule {}
