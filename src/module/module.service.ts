@@ -98,8 +98,6 @@ export class ModuleService {
   async searchModuleByKeyword(
     keyword: string,
   ): Promise<ModuleCardResponseDto[]> {
-    this.logger.log(`Searching modules with keyword: ${keyword}`);
-
     const modulos = await this.prisma.module.findMany({
       where: {
         OR: [
@@ -115,10 +113,6 @@ export class ModuleService {
         age_group: true,
       },
     });
-
-    this.logger.log(
-      `Found ${modulos.length} modules matching keyword: ${keyword}`,
-    );
 
     const moduleCards: ModuleCardResponseDto[] = modulos.map((module) => ({
       module_id: module.module_id,
