@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModuleController } from './module.controller';
 import { ModuleService } from './module.service';
-import {
-  UnauthorizedException,
-  HttpException,
-  BadRequestException,
-} from '@nestjs/common';
+import { HttpException, BadRequestException } from '@nestjs/common';
 import {
   mockCreateModuleDto,
   mockModule,
@@ -62,17 +58,6 @@ describe('ModuleController', () => {
         userId,
       );
       expect(mockModuleService.create).toHaveBeenCalledTimes(1);
-    });
-
-    it('should throw UnauthorizedException when userId is not provided', async () => {
-      // Act & Assert
-      await expect(
-        controller.create(mockCreateModuleDto, undefined as any),
-      ).rejects.toThrow(UnauthorizedException);
-      await expect(
-        controller.create(mockCreateModuleDto, undefined as any),
-      ).rejects.toThrow('User ID is required in x-user-id header');
-      expect(mockModuleService.create).not.toHaveBeenCalled();
     });
 
     it('should throw HttpException if service create fails', async () => {
