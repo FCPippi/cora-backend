@@ -5,6 +5,7 @@ import {
   Headers,
   Get,
   Param,
+  Query,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ModuleService } from './module.service';
@@ -36,6 +37,13 @@ export class ModuleController {
   @Get('recents')
   async getRecentModules(): Promise<ModuleCardResponseDto[]> {
     return await this.moduleService.getRecentModules();
+  }
+
+  @Get('search')
+  async searchModules(
+    @Query('keyword') keyword: string,
+  ): Promise<ModuleCardResponseDto[]> {
+    return await this.moduleService.searchModuleByKeyword(keyword);
   }
 
   @Get('popular')

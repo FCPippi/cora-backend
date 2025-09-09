@@ -44,6 +44,14 @@ export const mockModuleResponseNoContentsDto: ModuleResponseDto = {
   contents: [],
 };
 
+export const mockModuleCardResponseDto = {
+  module_id: 'test-module-id',
+  title: 'Module Title',
+  sinopsys: 'This is a test module synopsis.',
+  thumbnail: 'image.jpg',
+  age_group: '5-7',
+};
+
 export const mockModulesCardResponseDto = [
   {
     module_id: 'test-module-id',

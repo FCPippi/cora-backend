@@ -18,6 +18,7 @@ describe('ModuleController', () => {
     findAll: jest.fn(),
     getModuleById: jest.fn(),
     getRecentModules: jest.fn(),
+    searchModuleByKeyword: jest.fn(),
     getPopularModules: jest.fn(),
   };
 
@@ -64,7 +65,11 @@ describe('ModuleController', () => {
 
     it('should throw HttpException if service create fails', async () => {
       // Arrange
-      const serviceError = new HttpException('Service error', 500);
+      const HTTP_SERVER_ERROR = 500;
+      const serviceError = new HttpException(
+        'Service error',
+        HTTP_SERVER_ERROR,
+      );
       mockModuleService.create.mockRejectedValue(serviceError);
 
       // Act & Assert
@@ -127,6 +132,33 @@ describe('ModuleController', () => {
         BadRequestException,
       );
       expect(mockModuleService.getRecentModules).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('searchModules', () => {
+    const keyword = 'test';
+
+    it('should return modules that match the keyword', async () => {
+      mockModuleService.searchModuleByKeyword.mockResolvedValue([mockModule]);
+
+      const result = await controller.searchModules(keyword);
+
+      expect(result).toEqual([mockModule]);
+      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledWith(
+        keyword,
+      );
+      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return empty array if no modules match keyword', async () => {
+      mockModuleService.searchModuleByKeyword.mockResolvedValue([]);
+
+      const result = await controller.searchModules(keyword);
+
+      expect(result).toEqual([]);
+      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledWith(
+        keyword,
+      );
     });
   });
 
