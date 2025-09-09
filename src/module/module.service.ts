@@ -1,30 +1,9 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { ModuleCardResponseDto, ModuleResponseDto } from './dtos/module.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ModuleService {
-  async getRecentModules(): Promise<ModuleCardResponseDto[]> {
-    // Busca os 10 módulos mais recentes
-    const modules = await this.prisma.module.findMany({
-      orderBy: { creation_date: 'desc' },
-      take: 10,
-    });
-
-    if (!modules || modules.length === 0) {
-      throw new BadRequestException('No recent modules found');
-    }
-
-    return modules.map((module) => ({
-      module_id: module.module_id,
-      title: module.title,
-      sinopsys: module.sinopsys,
-      thumbnail: module.thumbnail,
-      age_group: module.age_group,
-    }));
-  }
-  private readonly logger = new Logger(ModuleService.name);
-
   constructor(private prisma: PrismaService) {}
 
   async getModuleById(moduleId: string): Promise<ModuleResponseDto> {
@@ -55,12 +34,32 @@ export class ModuleService {
     return moduleResponse;
   }
 
+  async getRecentModules(): Promise<ModuleCardResponseDto[]> {
+    const modules = await this.prisma.module.findMany({
+      orderBy: { creation_date: 'desc' },
+    });
+
+    if (!modules || modules.length === 0) {
+      throw new BadRequestException('No recent modules found');
+    }
+
+    return modules.map((module) => ({
+      module_id: module.module_id,
+      title: module.title,
+      sinopsys: module.sinopsys,
+      thumbnail: module.thumbnail,
+      age_group: module.age_group,
+    }));
+  }
+
   async getPopularModules(): Promise<ModuleCardResponseDto[]> {
-    // Busca os 10 módulos com mais views, retornando apenas os campos do card
     const modules = await this.prisma.module.findMany({
       orderBy: { views: 'desc' },
-      take: 10,
     });
+
+    if (!modules || modules.length === 0) {
+      throw new BadRequestException('No popular modules found');
+    }
 
     return modules.map((module) => ({
       module_id: module.module_id,
