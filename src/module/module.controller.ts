@@ -1,7 +1,6 @@
 // cora-backend/src/module/module.controller.ts
 import {
   Controller,
-  Get,
   Post,
   Body,
   Headers,

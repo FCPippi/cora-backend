@@ -2,14 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ModuleController } from './module.controller';
 import { ModuleService } from './module.service';
 import { UnauthorizedException, HttpException } from '@nestjs/common';
-import { mockCreateModuleDto, mockModule, mockModules } from './module.mock';
+import { mockCreateModuleDto, mockModule } from './module.mock';
 
 describe('ModuleController', () => {
   let controller: ModuleController;
 
   const mockModuleService = {
     create: jest.fn(),
-    findAll: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -89,43 +88,6 @@ describe('ModuleController', () => {
         userId,
       );
       expect(mockModuleService.create).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('findAll', () => {
-    it('should return all modules', async () => {
-      // Arrange
-      mockModuleService.findAll.mockResolvedValue(mockModules);
-
-      // Act
-      const result = await controller.findAll();
-
-      // Assert
-      expect(result).toEqual(mockModules);
-      expect(mockModuleService.findAll).toHaveBeenCalledWith();
-      expect(mockModuleService.findAll).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return empty array when no modules exist', async () => {
-      // Arrange
-      mockModuleService.findAll.mockResolvedValue([]);
-
-      // Act
-      const result = await controller.findAll();
-
-      // Assert
-      expect(result).toEqual([]);
-      expect(mockModuleService.findAll).toHaveBeenCalledTimes(1);
-    });
-
-    it('should throw HttpException if service findAll fails', async () => {
-      // Arrange
-      const serviceError = new Error('Service error');
-      mockModuleService.findAll.mockRejectedValue(serviceError);
-
-      // Act & Assert
-      await expect(controller.findAll()).rejects.toThrow(HttpException);
-      expect(mockModuleService.findAll).toHaveBeenCalledTimes(1);
     });
   });
 });

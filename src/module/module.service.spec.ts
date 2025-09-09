@@ -5,7 +5,6 @@ import { BadRequestException } from '@nestjs/common';
 import {
   mockCreateModuleDto,
   mockModule,
-  mockModules,
   invalidModuleDtos,
 } from './module.mock';
 
@@ -21,8 +20,6 @@ describe('ModuleService', () => {
   const mockPrismaService = {
     module: {
       create: jest.fn(),
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
     },
     user: {
       findUnique: jest.fn(),
@@ -155,120 +152,6 @@ describe('ModuleService', () => {
       await expect(
         service.create(invalidModuleDtos.invalidThumbnailUrl, userId),
       ).rejects.toThrow(validationError);
-    });
-  });
-
-  describe('findAll', () => {
-    it('should return all modules', async () => {
-      // Arrange
-      mockPrismaService.module.findMany.mockResolvedValue(mockModules);
-
-      // Act
-      const result = await service.findAll();
-
-      // Assert
-      expect(result).toEqual(mockModules);
-      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
-        include: {
-          user: {
-            select: {
-              user_id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
-        orderBy: {
-          creation_date: 'desc',
-        },
-      });
-      expect(mockPrismaService.module.findMany).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return empty array when no modules exist', async () => {
-      // Arrange
-      mockPrismaService.module.findMany.mockResolvedValue([]);
-
-      // Act
-      const result = await service.findAll();
-
-      // Assert
-      expect(result).toEqual([]);
-      expect(mockPrismaService.module.findMany).toHaveBeenCalledTimes(1);
-    });
-
-    it('should throw an error if prisma findMany fails', async () => {
-      // Arrange
-      const error = new Error('Database connection failed');
-      mockPrismaService.module.findMany.mockRejectedValue(error);
-
-      // Act & Assert
-      await expect(service.findAll()).rejects.toThrow(error);
-      expect(mockPrismaService.module.findMany).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('findOne', () => {
-    const moduleId = 'test-module-id';
-
-    it('should return a module when found', async () => {
-      // Arrange
-      mockPrismaService.module.findUnique.mockResolvedValue(mockModule);
-
-      // Act
-      const result = await service.findOne(moduleId);
-
-      // Assert
-      expect(result).toEqual(mockModule);
-      expect(mockPrismaService.module.findUnique).toHaveBeenCalledWith({
-        where: { module_id: moduleId },
-        include: {
-          user: {
-            select: {
-              user_id: true,
-              name: true,
-              email: true,
-            },
-          },
-          contents: true,
-        },
-      });
-      expect(mockPrismaService.module.findUnique).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return null when module not found', async () => {
-      // Arrange
-      mockPrismaService.module.findUnique.mockResolvedValue(null);
-
-      // Act
-      const result = await service.findOne(moduleId);
-
-      // Assert
-      expect(result).toBeNull();
-      expect(mockPrismaService.module.findUnique).toHaveBeenCalledWith({
-        where: { module_id: moduleId },
-        include: {
-          user: {
-            select: {
-              user_id: true,
-              name: true,
-              email: true,
-            },
-          },
-          contents: true,
-        },
-      });
-      expect(mockPrismaService.module.findUnique).toHaveBeenCalledTimes(1);
-    });
-
-    it('should throw an error if prisma findUnique fails', async () => {
-      // Arrange
-      const error = new Error('Database connection failed');
-      mockPrismaService.module.findUnique.mockRejectedValue(error);
-
-      // Act & Assert
-      await expect(service.findOne(moduleId)).rejects.toThrow(error);
-      expect(mockPrismaService.module.findUnique).toHaveBeenCalledTimes(1);
     });
   });
 });
