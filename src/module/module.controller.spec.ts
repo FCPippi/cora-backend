@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException, HttpException } from '@nestjs/common';
+
 import { ModuleController } from './module.controller';
 import { ModuleService } from './module.service';
-import { HttpException, BadRequestException } from '@nestjs/common';
 import {
   mockCreateModuleDto,
   mockModule,

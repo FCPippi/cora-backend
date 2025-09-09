@@ -29,12 +29,12 @@ export class ModuleController {
   }
 
   @Get('/id/:id')
-  async getModuleById(@Param('id') id: string): Promise<any> {
+  async getModuleById(@Param('id') id: string): Promise<ModuleResponseDto> {
     return await this.moduleService.getModuleById(id);
   }
 
   @Get('/recents')
-  async getRecentModules(): Promise<any> {
+  async getRecentModules(): Promise<ModuleCardResponseDto[]> {
     return await this.moduleService.getRecentModules();
   }
 }
