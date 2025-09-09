@@ -2,6 +2,14 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { ModuleCardResponseDto, ModuleResponseDto } from './dtos/module.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
+interface RandomModuleResult {
+  module_id: string;
+  title: string;
+  sinopsys: string;
+  thumbnail: string;
+  age_group: string;
+}
+
 @Injectable()
 export class ModuleService {
   constructor(private prisma: PrismaService) {}
@@ -84,6 +92,26 @@ export class ModuleService {
 
     if (!modules || modules.length === 0) {
       throw new BadRequestException('No popular modules found');
+    }
+
+    return modules.map((module) => ({
+      module_id: module.module_id,
+      title: module.title,
+      sinopsys: module.sinopsys,
+      thumbnail: module.thumbnail,
+      age_group: module.age_group,
+    }));
+  }
+
+  async getRecommendedModules(): Promise<ModuleCardResponseDto[]> {
+    const modules = await this.prisma.$queryRaw<RandomModuleResult[]>`
+      SELECT module_id, title, sinopsys, thumbnail, age_group 
+      FROM "Module" 
+      ORDER BY RANDOM()
+    `;
+
+    if (!modules || modules.length === 0) {
+      throw new BadRequestException('No recommended modules found');
     }
 
     return modules.map((module) => ({

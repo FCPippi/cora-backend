@@ -22,6 +22,7 @@ describe('ModuleService', () => {
     content: {
       findMany: jest.fn(),
     },
+    $queryRaw: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -263,6 +264,26 @@ describe('ModuleService', () => {
       expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
         orderBy: { views: 'desc' },
       });
+    });
+  });
+
+  describe('getRecommendedModules', () => {
+    it('should return an array of recommended modules', async () => {
+      mockPrismaService.$queryRaw.mockResolvedValue(mockModulesCardResponseDto);
+
+      const result = await service.getRecommendedModules();
+
+      expect(result).toEqual(mockModulesCardResponseDto);
+      expect(mockPrismaService.$queryRaw).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw BadRequestException if no recommended modules are found', async () => {
+      mockPrismaService.$queryRaw.mockResolvedValue([]);
+
+      await expect(service.getRecommendedModules()).rejects.toThrow(
+        'No recommended modules found',
+      );
+      expect(mockPrismaService.$queryRaw).toHaveBeenCalledTimes(1);
     });
   });
 });
