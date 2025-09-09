@@ -20,6 +20,7 @@ describe('ModuleController', () => {
     getRecentModules: jest.fn(),
     searchModuleByKeyword: jest.fn(),
     getPopularModules: jest.fn(),
+    getRecommendedModules: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -135,33 +136,6 @@ describe('ModuleController', () => {
     });
   });
 
-  describe('searchModules', () => {
-    const keyword = 'test';
-
-    it('should return modules that match the keyword', async () => {
-      mockModuleService.searchModuleByKeyword.mockResolvedValue([mockModule]);
-
-      const result = await controller.searchModules(keyword);
-
-      expect(result).toEqual([mockModule]);
-      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledWith(
-        keyword,
-      );
-      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return empty array if no modules match keyword', async () => {
-      mockModuleService.searchModuleByKeyword.mockResolvedValue([]);
-
-      const result = await controller.searchModules(keyword);
-
-      expect(result).toEqual([]);
-      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledWith(
-        keyword,
-      );
-    });
-  });
-
   describe('getPopularModules', () => {
     it('should return an array of popular modules', async () => {
       mockModuleService.getPopularModules.mockResolvedValue(
@@ -192,6 +166,66 @@ describe('ModuleController', () => {
         BadRequestException,
       );
       expect(mockModuleService.getPopularModules).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getRecommendedModules', () => {
+    it('should return an array of recommended modules', async () => {
+      mockModuleService.getRecommendedModules.mockResolvedValue(
+        mockModulesCardResponseDto,
+      );
+
+      const result = await controller.getRecommendedModules();
+
+      expect(result).toEqual(mockModulesCardResponseDto);
+      expect(mockModuleService.getRecommendedModules).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return an empty array if no recommended modules are found', async () => {
+      mockModuleService.getRecommendedModules.mockResolvedValue([]);
+
+      const result = await controller.getRecommendedModules();
+
+      expect(result).toEqual([]);
+      expect(mockModuleService.getRecommendedModules).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw BadRequestException if service throws', async () => {
+      mockModuleService.getRecommendedModules.mockRejectedValue(
+        new BadRequestException('No recommended modules found'),
+      );
+
+      await expect(controller.getRecommendedModules()).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockModuleService.getRecommendedModules).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('searchModules', () => {
+    const keyword = 'test';
+
+    it('should return modules that match the keyword', async () => {
+      mockModuleService.searchModuleByKeyword.mockResolvedValue([mockModule]);
+
+      const result = await controller.searchModules(keyword);
+
+      expect(result).toEqual([mockModule]);
+      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledWith(
+        keyword,
+      );
+      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return empty array if no modules match keyword', async () => {
+      mockModuleService.searchModuleByKeyword.mockResolvedValue([]);
+
+      const result = await controller.searchModules(keyword);
+
+      expect(result).toEqual([]);
+      expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledWith(
+        keyword,
+      );
     });
   });
 });
