@@ -44,7 +44,7 @@ export const mockModuleResponseNoContentsDto: ModuleResponseDto = {
   contents: [],
 };
 
-export const mockRecentModulesCardResponseDto = [
+export const mockModulesCardResponseDto = [
   {
     module_id: 'test-module-id',
     title: 'Module Title',

@@ -33,8 +33,13 @@ export class ModuleController {
     return await this.moduleService.getModuleById(id);
   }
 
-  @Get('/recents')
+  @Get('recents')
   async getRecentModules(): Promise<ModuleCardResponseDto[]> {
     return await this.moduleService.getRecentModules();
+  }
+
+  @Get('popular')
+  async getPopularModules(): Promise<ModuleCardResponseDto[]> {
+    return await this.moduleService.getPopularModules();
   }
 }
