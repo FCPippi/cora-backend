@@ -1,16 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModuleService } from './module.service';
 import { PrismaService } from '../prisma/prisma.service';
+<<<<<<< HEAD
 import { BadRequestException } from '@nestjs/common';
 import {
   mockCreateModuleDto,
   mockModule,
   invalidModuleDtos,
 } from './module.mock';
+=======
+import {
+  mockModule,
+  mockModule2,
+  mockModuleResponseDto,
+  mockModuleResponseNoContentsDto,
+  mockRecentModulesCardResponseDto,
+} from './module.mock';
+import { mockContentResponseDto } from '../content/content.mock';
+>>>>>>> dev
 
 describe('ModuleService', () => {
   let service: ModuleService;
 
+<<<<<<< HEAD
   const mockUser = {
     user_id: 'test-user-id',
     name: 'Test User',
@@ -23,6 +35,15 @@ describe('ModuleService', () => {
     },
     user: {
       findUnique: jest.fn(),
+=======
+  const mockPrismaService = {
+    module: {
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+    },
+    content: {
+      findMany: jest.fn(),
+>>>>>>> dev
     },
   };
 
@@ -48,6 +69,7 @@ describe('ModuleService', () => {
     expect(service).toBeDefined();
   });
 
+<<<<<<< HEAD
   describe('create', () => {
     const userId = 'test-user-id';
 
@@ -152,6 +174,111 @@ describe('ModuleService', () => {
       await expect(
         service.create(invalidModuleDtos.invalidThumbnailUrl, userId),
       ).rejects.toThrow(validationError);
+=======
+  describe('getModuleById', () => {
+    it('should return a module with contents if it exists', async () => {
+      const moduleId = 'test-module-id';
+
+      mockPrismaService.module.findUnique.mockResolvedValue(mockModule);
+      mockPrismaService.content.findMany.mockResolvedValue([
+        mockContentResponseDto,
+      ]);
+
+      const result = await service.getModuleById(moduleId);
+
+      expect(result).toEqual(mockModuleResponseDto);
+      expect(mockPrismaService.module.findUnique).toHaveBeenCalledWith({
+        where: { module_id: moduleId },
+      });
+      expect(mockPrismaService.content.findMany).toHaveBeenCalledWith({
+        where: { module_id: moduleId },
+      });
+    });
+
+    it('should return a module with empty contents array when no contents exist', async () => {
+      const moduleId = 'test-module-id';
+
+      mockPrismaService.module.findUnique.mockResolvedValue(mockModule);
+      mockPrismaService.content.findMany.mockResolvedValue([]);
+
+      const result = await service.getModuleById(moduleId);
+
+      expect(result).toEqual(mockModuleResponseNoContentsDto);
+      expect(mockPrismaService.module.findUnique).toHaveBeenCalledWith({
+        where: { module_id: moduleId },
+      });
+      expect(mockPrismaService.content.findMany).toHaveBeenCalledWith({
+        where: { module_id: moduleId },
+      });
+    });
+
+    it('should return BadRequestException when module does not exist', async () => {
+      const moduleId = 'non-existent-module-id';
+
+      mockPrismaService.module.findUnique.mockResolvedValue(null);
+
+      await expect(service.getModuleById(moduleId)).rejects.toThrow(
+        'Module not found',
+      );
+      expect(mockPrismaService.module.findUnique).toHaveBeenCalledWith({
+        where: { module_id: moduleId },
+      });
+      expect(mockPrismaService.content.findMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getRecentModules', () => {
+    it('should return an array of recent modules', async () => {
+      mockPrismaService.module.findMany.mockResolvedValue([
+        mockModule,
+        mockModule2,
+      ]);
+
+      const result = await service.getRecentModules();
+
+      expect(result).toEqual(mockRecentModulesCardResponseDto);
+      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
+        orderBy: { creation_date: 'desc' },
+      });
+    });
+
+    it('should throw BadRequestException if no recent modules are found', async () => {
+      mockPrismaService.module.findMany.mockResolvedValue([]);
+
+      await expect(service.getRecentModules()).rejects.toThrow(
+        'No recent modules found',
+      );
+      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
+        orderBy: { creation_date: 'desc' },
+      });
+    });
+
+    it('should return modules ordered by creation_date desc', async () => {
+      const olderModule = {
+        ...mockModule,
+        creation_date: new Date('2023-01-01'),
+      };
+      const newerModule = {
+        ...mockModule2,
+        creation_date: new Date('2023-12-31'),
+      };
+
+      mockPrismaService.module.findMany.mockResolvedValue([
+        newerModule,
+        olderModule,
+      ]);
+
+      const result = await service.getRecentModules();
+
+      expect(result[0]).toEqual(
+        expect.objectContaining({
+          title: newerModule.title,
+        }),
+      );
+      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
+        orderBy: { creation_date: 'desc' },
+      });
+>>>>>>> dev
     });
   });
 });
