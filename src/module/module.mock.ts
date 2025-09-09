@@ -14,6 +14,18 @@ export const mockModule: Module = {
   user_id: '',
 };
 
+export const mockModule2: Module = {
+  module_id: 'test-module-id-2',
+  title: 'Module Title 2',
+  sinopsys: 'This is another test module sinopsys.',
+  thumbnail: 'another-image.jpg',
+  age_group: '8-10',
+  views: 2,
+  creation_date: new Date(),
+  updatedAt: new Date(),
+  user_id: '',
+};
+
 export const mockModuleResponseDto: ModuleResponseDto = {
   title: 'Module Title',
   contents: [mockContentResponseDto],
@@ -23,3 +35,20 @@ export const mockModuleResponseNoContentsDto: ModuleResponseDto = {
   title: 'Module Title',
   contents: [],
 };
+
+export const mockRecentModulesCardResponseDto = [
+  {
+    module_id: 'test-module-id',
+    title: 'Module Title',
+    sinopsys: 'This is a test module sinopsys.',
+    thumbnail: 'image.jpg',
+    age_group: '5-7',
+  },
+  {
+    module_id: 'test-module-id-2',
+    title: 'Module Title 2',
+    sinopsys: 'This is another test module sinopsys.',
+    thumbnail: 'another-image.jpg',
+    age_group: '8-10',
+  },
+];

@@ -1,19 +1,18 @@
-// cora-backend/src/module/module.controller.ts
 import { Controller, Get, Param } from '@nestjs/common';
 import { ModuleService } from './module.service';
-import { ModuleResponseDto } from './dtos/module.dto';
+import { ModuleCardResponseDto, ModuleResponseDto } from './dtos/module.dto';
 
-@Controller('module')
+@Controller('/module')
 export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
-  @Get(':id')
+  @Get('/id/:id')
   async getModuleById(@Param('id') id: string): Promise<ModuleResponseDto> {
     return await this.moduleService.getModuleById(id);
   }
 
   @Get('popular')
-  async getPopularModules(): Promise<ModuleResponseDto[]> {
+  async getPopularModules(): Promise<ModuleCardResponseDto[]> {
     return await this.moduleService.getPopularModules();
   }
 }

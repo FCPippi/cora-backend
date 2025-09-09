@@ -1,5 +1,5 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import { ModuleResponseDto } from './dtos/module.dto';
+import { ModuleCardResponseDto, ModuleResponseDto } from './dtos/module.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -36,24 +36,19 @@ export class ModuleService {
     return moduleResponse;
   }
 
-  async getPopularModules(): Promise<ModuleResponseDto[]> {
-    // Busca os 10 módulos com mais views
+  async getPopularModules(): Promise<ModuleCardResponseDto[]> {
+    // Busca os 10 módulos com mais views, retornando apenas os campos do card
     const modules = await this.prisma.module.findMany({
       orderBy: { views: 'desc' },
       take: 10,
-      include: { contents: true },
     });
 
     return modules.map((module) => ({
+      module_id: module.module_id,
       title: module.title,
-      contents: module.contents.map((content) => ({
-        content_id: content.content_id,
-        text: content.text ?? '',
-        image: content.image ?? '',
-        template: content.template ?? '',
-        video_link: content.video_link ?? '',
-        module_id: content.module_id,
-      })),
+      sinopsys: module.sinopsys,
+      thumbnail: module.thumbnail,
+      age_group: module.age_group,
     }));
   }
 }
