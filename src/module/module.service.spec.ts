@@ -97,6 +97,63 @@ describe('ModuleService', () => {
     });
   });
 
+  describe('getRecentModules', () => {
+    it('should return an array of recent modules', async () => {
+      mockPrismaService.module.findMany.mockResolvedValue([
+        mockModule,
+        mockModule2,
+      ]);
+
+      const result = await service.getRecentModules();
+
+      expect(result).toEqual(mockRecentModulesCardResponseDto);
+      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
+        orderBy: { creation_date: 'desc' },
+        take: 10,
+      });
+    });
+
+    it('should throw BadRequestException if no recent modules are found', async () => {
+      mockPrismaService.module.findMany.mockResolvedValue([]);
+
+      await expect(service.getRecentModules()).rejects.toThrow(
+        'No recent modules found',
+      );
+      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
+        orderBy: { creation_date: 'desc' },
+        take: 10,
+      });
+    });
+
+    it('should return modules ordered by creation_date desc', async () => {
+      const olderModule = {
+        ...mockModule,
+        creation_date: new Date('2023-01-01'),
+      };
+      const newerModule = {
+        ...mockModule2,
+        creation_date: new Date('2023-12-31'),
+      };
+
+      mockPrismaService.module.findMany.mockResolvedValue([
+        newerModule,
+        olderModule,
+      ]);
+
+      const result = await service.getRecentModules();
+
+      expect(result[0]).toEqual(
+        expect.objectContaining({
+          title: newerModule.title,
+        }),
+      );
+      expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
+        orderBy: { creation_date: 'desc' },
+        take: 10,
+      });
+    });
+  });
+
   describe('getPopularModules', () => {
     it('should return an array of recent modules', async () => {
       mockPrismaService.module.findMany.mockResolvedValue([
@@ -115,9 +172,9 @@ describe('ModuleService', () => {
     it('should throw BadRequestException if no recent modules are found', async () => {
       mockPrismaService.module.findMany.mockResolvedValue([]);
 
-  await expect(service.getPopularModules()).rejects.toThrow(
-      ··'No recent modules found',
-    );
+      await expect(service.getPopularModules()).rejects.toThrow(
+        'No recent modules found',
+      );
       expect(mockPrismaService.module.findMany).toHaveBeenCalledWith({
         orderBy: { creation_date: 'desc' },
       });

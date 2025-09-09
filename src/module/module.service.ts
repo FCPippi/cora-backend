@@ -4,6 +4,25 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ModuleService {
+  async getRecentModules(): Promise<ModuleCardResponseDto[]> {
+    // Busca os 10 módulos mais recentes
+    const modules = await this.prisma.module.findMany({
+      orderBy: { creation_date: 'desc' },
+      take: 10,
+    });
+
+    if (!modules || modules.length === 0) {
+      throw new BadRequestException('No recent modules found');
+    }
+
+    return modules.map((module) => ({
+      module_id: module.module_id,
+      title: module.title,
+      sinopsys: module.sinopsys,
+      thumbnail: module.thumbnail,
+      age_group: module.age_group,
+    }));
+  }
   private readonly logger = new Logger(ModuleService.name);
 
   constructor(private prisma: PrismaService) {}

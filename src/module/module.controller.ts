@@ -4,6 +4,10 @@ import { ModuleCardResponseDto, ModuleResponseDto } from './dtos/module.dto';
 
 @Controller('/module')
 export class ModuleController {
+  @Get('recents')
+  async getRecentModules(): Promise<ModuleCardResponseDto[]> {
+    return await this.moduleService.getRecentModules();
+  }
   constructor(private readonly moduleService: ModuleService) {}
 
   @Get('/id/:id')
