@@ -1,7 +1,7 @@
 // cora-backend/src/module/module.controller.ts
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ModuleService } from './module.service';
-import { ModuleResponseDto,ModuleCardResponseDto } from './dtos/module.dto';
+import { ModuleResponseDto, ModuleCardResponseDto } from './dtos/module.dto';
 
 @Controller('module')
 export class ModuleController {
@@ -13,7 +13,9 @@ export class ModuleController {
   }
 
   @Get('search')
-  async searchModules(@Query('keyword') keyword:string): Promise<ModuleCardResponseDto[]>{
+  async searchModules(
+    @Query('keyword') keyword: string,
+  ): Promise<ModuleCardResponseDto[]> {
     return await this.moduleService.searchModuleByKeyword(keyword);
   }
 }
