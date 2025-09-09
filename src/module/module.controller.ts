@@ -11,4 +11,9 @@ export class ModuleController {
   async getModuleById(@Param('id') id: string): Promise<ModuleResponseDto> {
     return await this.moduleService.getModuleById(id);
   }
+
+  @Get('popular')
+  async getPopularModules(): Promise<ModuleResponseDto[]> {
+    return await this.moduleService.getPopularModules();
+  }
 }
