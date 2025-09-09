@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException, HttpException } from '@nestjs/common';
+
 import { ModuleController } from './module.controller';
 import { ModuleService } from './module.service';
-import { BadRequestException } from '@nestjs/common';
 import {
+  mockCreateModuleDto,
+  mockModule,
   mockModuleResponseDto,
   mockRecentModulesCardResponseDto,
 } from './module.mock';
@@ -37,6 +40,37 @@ describe('ModuleController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('create', () => {
+    const userId = 'test-user-id';
+
+    it('should create a module successfully', async () => {
+      // Arrange
+      mockModuleService.create.mockResolvedValue(mockModule);
+
+      // Act
+      const result = await controller.create(mockCreateModuleDto, userId);
+
+      // Assert
+      expect(result).toEqual(mockModule);
+      expect(mockModuleService.create).toHaveBeenCalledWith(
+        mockCreateModuleDto,
+        userId,
+      );
+      expect(mockModuleService.create).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw HttpException if service create fails', async () => {
+      // Arrange
+      const serviceError = new HttpException('Service error', 500);
+      mockModuleService.create.mockRejectedValue(serviceError);
+
+      // Act & Assert
+      await expect(
+        controller.create(mockCreateModuleDto, userId),
+      ).rejects.toThrow(HttpException);
+    });
   });
 
   describe('getModuleById', () => {

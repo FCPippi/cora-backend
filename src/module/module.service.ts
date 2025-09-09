@@ -8,6 +8,31 @@ export class ModuleService {
 
   constructor(private prisma: PrismaService) {}
 
+  async create(
+    createModuleDto: Omit<ModuleCardResponseDto, 'module_id'>,
+    userId: string,
+  ): Promise<ModuleCardResponseDto> {
+    // Verify if user exists
+    const userExists = await this.prisma.user.findUnique({
+      where: { user_id: userId },
+    });
+
+    if (!userExists) {
+      throw new BadRequestException(`User with ID ${userId} does not exist`);
+    }
+
+    const module = await this.prisma.module.create({
+      data: {
+        title: createModuleDto.title,
+        sinopsys: createModuleDto.sinopsys,
+        thumbnail: createModuleDto.thumbnail,
+        age_group: createModuleDto.age_group,
+        user_id: userId,
+      },
+    });
+    return module;
+  }
+
   async getModuleById(moduleId: string): Promise<ModuleResponseDto> {
     const module = await this.prisma.module.findUnique({
       where: { module_id: moduleId },
