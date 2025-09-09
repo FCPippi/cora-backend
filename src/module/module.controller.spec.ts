@@ -2,7 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ModuleController } from './module.controller';
 import { ModuleService } from './module.service';
 import { BadRequestException } from '@nestjs/common';
-import { mockModuleResponseDto } from './module.mock';
+import {
+  mockModuleResponseDto,
+  mockRecentModulesCardResponseDto,
+} from './module.mock';
 
 describe('ModuleController', () => {
   let controller: ModuleController;
@@ -11,6 +14,7 @@ describe('ModuleController', () => {
     create: jest.fn(),
     findAll: jest.fn(),
     getModuleById: jest.fn(),
+    getRecentModules: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -55,6 +59,39 @@ describe('ModuleController', () => {
         BadRequestException,
       );
       expect(mockModuleService.getModuleById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getRecentModules', () => {
+    it('should return an array of recent modules', async () => {
+      mockModuleService.getRecentModules.mockResolvedValue(
+        mockRecentModulesCardResponseDto,
+      );
+
+      const result = await controller.getRecentModules();
+
+      expect(result).toEqual(mockRecentModulesCardResponseDto);
+      expect(mockModuleService.getRecentModules).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return an empty array if no recent modules are found', async () => {
+      mockModuleService.getRecentModules.mockResolvedValue([]);
+
+      const result = await controller.getRecentModules();
+
+      expect(result).toEqual([]);
+      expect(mockModuleService.getRecentModules).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw BadRequestException if service throws', async () => {
+      mockModuleService.getRecentModules.mockRejectedValue(
+        new BadRequestException('No recent modules found'),
+      );
+
+      await expect(controller.getRecentModules()).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockModuleService.getRecentModules).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import { ModuleResponseDto } from './dtos/module.dto';
+import { ModuleCardResponseDto, ModuleResponseDto } from './dtos/module.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -34,5 +34,26 @@ export class ModuleService {
     };
 
     return moduleResponse;
+  }
+
+  async getRecentModules(): Promise<ModuleCardResponseDto[]> {
+    this.logger.log('Fetching recent modules');
+    const recentModules = await this.prisma.module.findMany({
+      orderBy: { creation_date: 'desc' },
+    });
+
+    if (recentModules.length === 0) {
+      throw new BadRequestException('No recent modules found');
+    }
+
+    const recentModulesResponse = recentModules.map((module) => ({
+      module_id: module.module_id,
+      title: module.title,
+      sinopsys: module.sinopsys,
+      thumbnail: module.thumbnail,
+      age_group: module.age_group,
+    }));
+
+    return recentModulesResponse;
   }
 }
