@@ -52,7 +52,7 @@ export const mockModuleCardResponseDto = {
   age_group: '5-7',
 };
 
-export const mockRecentModulesCardResponseDto = [
+export const mockModulesCardResponseDto = [
   {
     module_id: 'test-module-id',
     title: 'Module Title',

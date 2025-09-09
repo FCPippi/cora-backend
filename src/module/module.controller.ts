@@ -34,7 +34,7 @@ export class ModuleController {
     return await this.moduleService.getModuleById(id);
   }
 
-  @Get('/recents')
+  @Get('recents')
   async getRecentModules(): Promise<ModuleCardResponseDto[]> {
     return await this.moduleService.getRecentModules();
   }
@@ -44,5 +44,10 @@ export class ModuleController {
     @Query('keyword') keyword: string,
   ): Promise<ModuleCardResponseDto[]> {
     return await this.moduleService.searchModuleByKeyword(keyword);
+  }
+
+  @Get('popular')
+  async getPopularModules(): Promise<ModuleCardResponseDto[]> {
+    return await this.moduleService.getPopularModules();
   }
 }

@@ -1,11 +1,9 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { ModuleCardResponseDto, ModuleResponseDto } from './dtos/module.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ModuleService {
-  private readonly logger = new Logger(ModuleService.name);
-
   constructor(private prisma: PrismaService) {}
 
   async create(
@@ -62,24 +60,39 @@ export class ModuleService {
   }
 
   async getRecentModules(): Promise<ModuleCardResponseDto[]> {
-    this.logger.log('Fetching recent modules');
-    const recentModules = await this.prisma.module.findMany({
+    const modules = await this.prisma.module.findMany({
       orderBy: { creation_date: 'desc' },
     });
 
-    if (recentModules.length === 0) {
+    if (!modules || modules.length === 0) {
       throw new BadRequestException('No recent modules found');
     }
 
-    const recentModulesResponse = recentModules.map((module) => ({
+    return modules.map((module) => ({
       module_id: module.module_id,
       title: module.title,
       sinopsys: module.sinopsys,
       thumbnail: module.thumbnail,
       age_group: module.age_group,
     }));
+  }
 
-    return recentModulesResponse;
+  async getPopularModules(): Promise<ModuleCardResponseDto[]> {
+    const modules = await this.prisma.module.findMany({
+      orderBy: { views: 'desc' },
+    });
+
+    if (!modules || modules.length === 0) {
+      throw new BadRequestException('No popular modules found');
+    }
+
+    return modules.map((module) => ({
+      module_id: module.module_id,
+      title: module.title,
+      sinopsys: module.sinopsys,
+      thumbnail: module.thumbnail,
+      age_group: module.age_group,
+    }));
   }
 
   async searchModuleByKeyword(
