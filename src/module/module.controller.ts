@@ -40,20 +40,4 @@ export class ModuleController {
       );
     }
   }
-
-  @Get()
-  async findAll() {
-    try {
-      return await this.moduleService.findAll();
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Failed to fetch modules',
-          message: error instanceof Error ? error.message : 'Unknown error',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
 }
