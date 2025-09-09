@@ -8,6 +8,31 @@ export class ModuleService {
 
   constructor(private prisma: PrismaService) {}
 
+  async create(
+    createModuleDto: Omit<ModuleCardResponseDto, 'module_id'>,
+    userId: string,
+  ): Promise<ModuleCardResponseDto> {
+    // Verify if user exists
+    const userExists = await this.prisma.user.findUnique({
+      where: { user_id: userId },
+    });
+
+    if (!userExists) {
+      throw new BadRequestException(`User with ID ${userId} does not exist`);
+    }
+
+    const module = await this.prisma.module.create({
+      data: {
+        title: createModuleDto.title,
+        sinopsys: createModuleDto.sinopsys,
+        thumbnail: createModuleDto.thumbnail,
+        age_group: createModuleDto.age_group,
+        user_id: userId,
+      },
+    });
+    return module;
+  }
+
   async getModuleById(moduleId: string): Promise<ModuleResponseDto> {
     const module = await this.prisma.module.findUnique({
       where: { module_id: moduleId },
@@ -35,9 +60,33 @@ export class ModuleService {
 
     return moduleResponse;
   }
+
+  async getRecentModules(): Promise<ModuleCardResponseDto[]> {
+    this.logger.log('Fetching recent modules');
+    const recentModules = await this.prisma.module.findMany({
+      orderBy: { creation_date: 'desc' },
+    });
+
+    if (recentModules.length === 0) {
+      throw new BadRequestException('No recent modules found');
+    }
+
+    const recentModulesResponse = recentModules.map((module) => ({
+      module_id: module.module_id,
+      title: module.title,
+      sinopsys: module.sinopsys,
+      thumbnail: module.thumbnail,
+      age_group: module.age_group,
+    }));
+
+    return recentModulesResponse;
+  }
+
   async searchModuleByKeyword(
     keyword: string,
   ): Promise<ModuleCardResponseDto[]> {
+    this.logger.log(`Searching modules with keyword: ${keyword}`);
+
     const modulos = await this.prisma.module.findMany({
       where: {
         OR: [
@@ -53,6 +102,11 @@ export class ModuleService {
         age_group: true,
       },
     });
+
+    this.logger.log(
+      `Found ${modulos.length} modules matching keyword: ${keyword}`,
+    );
+
     const moduleCards: ModuleCardResponseDto[] = modulos.map((module) => ({
       module_id: module.module_id,
       title: module.title,
