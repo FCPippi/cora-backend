@@ -35,29 +35,31 @@ export class ModuleService {
 
     return moduleResponse;
   }
-  async searchModuleByKeyword(keyword: string):Promise<ModuleCardResponseDto[]>{
-  const modulos = await this.prisma.module.findMany({
-    where: {
-      OR:[
-        {title:{contains:keyword,mode:'insensitive'}},
-        {sinopsys:{contains:keyword,mode:'insensitive'}}
-      ]
-    },
-    select: {
-      module_id: true,
-      title: true,
-      thumbnail: true,
-      sinopsys: true,
-      age_group: true,
-    },
-  })
-  const moduleCards: ModuleCardResponseDto[] = modulos.map((module) => ({
-      module_id:module.module_id,
+  async searchModuleByKeyword(
+    keyword: string,
+  ): Promise<ModuleCardResponseDto[]> {
+    const modulos = await this.prisma.module.findMany({
+      where: {
+        OR: [
+          { title: { contains: keyword, mode: 'insensitive' } },
+          { sinopsys: { contains: keyword, mode: 'insensitive' } },
+        ],
+      },
+      select: {
+        module_id: true,
+        title: true,
+        thumbnail: true,
+        sinopsys: true,
+        age_group: true,
+      },
+    });
+    const moduleCards: ModuleCardResponseDto[] = modulos.map((module) => ({
+      module_id: module.module_id,
       title: module.title,
       sinopsys: module.sinopsys,
       thumbnail: module.thumbnail,
       age_group: module.age_group,
     }));
     return moduleCards;
-}
+  }
 }
