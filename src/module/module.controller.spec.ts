@@ -7,7 +7,9 @@ import {
   mockCreateModuleDto,
   mockModule,
   mockModuleResponseDto,
-  mockModulesCardResponseDto,
+  mockModuleResponseDto2,
+  mockRecentModulesCardResponseDto,
+  mockModuleCardResponseDto,
 } from './module.mock';
 
 describe('ModuleController', () => {
@@ -20,6 +22,7 @@ describe('ModuleController', () => {
     getRecentModules: jest.fn(),
     searchModuleByKeyword: jest.fn(),
     getPopularModules: jest.fn(),
+    getModuleById2: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -102,15 +105,41 @@ describe('ModuleController', () => {
     });
   });
 
+  describe('getModuleById2', () => {
+    const moduleId = 'test-module-id';
+
+    it('should return a module with its details and contents', async () => {
+      mockModuleService.getModuleById2.mockResolvedValue(mockModuleResponseDto2);
+
+      const result = await controller.getModuleById2(moduleId);
+
+      expect(result).toEqual(mockModuleResponseDto2);
+      expect(mockModuleService.getModuleById2).toHaveBeenCalledWith(moduleId);
+      expect(mockModuleService.getModuleById2).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw BadRequestException if the module is not found', async () => {
+      mockModuleService.getModuleById2.mockRejectedValue(
+        new BadRequestException('Module not found'),
+      );
+
+      await expect(controller.getModuleById2(moduleId)).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockModuleService.getModuleById2).toHaveBeenCalledWith(moduleId);
+      expect(mockModuleService.getModuleById2).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('getRecentModules', () => {
     it('should return an array of recent modules', async () => {
       mockModuleService.getRecentModules.mockResolvedValue(
-        mockModulesCardResponseDto,
+        mockRecentModulesCardResponseDto,
       );
 
       const result = await controller.getRecentModules();
 
-      expect(result).toEqual(mockModulesCardResponseDto);
+      expect(result).toEqual(mockRecentModulesCardResponseDto);
       expect(mockModuleService.getRecentModules).toHaveBeenCalledTimes(1);
     });
 
@@ -139,11 +168,13 @@ describe('ModuleController', () => {
     const keyword = 'test';
 
     it('should return modules that match the keyword', async () => {
-      mockModuleService.searchModuleByKeyword.mockResolvedValue([mockModule]);
+      mockModuleService.searchModuleByKeyword.mockResolvedValue([
+        mockModuleCardResponseDto,
+      ]);
 
       const result = await controller.searchModules(keyword);
 
-      expect(result).toEqual([mockModule]);
+      expect(result).toEqual([mockModuleCardResponseDto]);
       expect(mockModuleService.searchModuleByKeyword).toHaveBeenCalledWith(
         keyword,
       );
@@ -165,12 +196,12 @@ describe('ModuleController', () => {
   describe('getPopularModules', () => {
     it('should return an array of popular modules', async () => {
       mockModuleService.getPopularModules.mockResolvedValue(
-        mockModulesCardResponseDto,
+        mockRecentModulesCardResponseDto,
       );
 
       const result = await controller.getPopularModules();
 
-      expect(result).toEqual(mockModulesCardResponseDto);
+      expect(result).toEqual(mockRecentModulesCardResponseDto);
       expect(mockModuleService.getPopularModules).toHaveBeenCalledTimes(1);
     });
 

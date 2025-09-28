@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ModuleService } from './module.service';
-import { ModuleCardResponseDto, ModuleResponseDto } from './dtos/module.dto';
+import { ModuleCardResponseDto, ModuleResponseDto, ModuleResponseDto2 } from './dtos/module.dto';
 
 @Controller('module')
 export class ModuleController {
@@ -49,5 +49,10 @@ export class ModuleController {
   @Get('popular')
   async getPopularModules(): Promise<ModuleCardResponseDto[]> {
     return await this.moduleService.getPopularModules();
+  }
+
+  @Get('/id2/:id')
+  async getModuleById2(@Param('id') id: string): Promise<ModuleResponseDto2> {
+    return await this.moduleService.getModuleById2(id);
   }
 }
