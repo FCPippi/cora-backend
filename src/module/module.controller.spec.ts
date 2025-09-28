@@ -8,7 +8,7 @@ import {
   mockModule,
   mockModuleResponseDto,
   mockModuleResponseDto2,
-  mockRecentModulesCardResponseDto,
+  mockModulesCardResponseDto,
   mockModuleCardResponseDto,
 } from './module.mock';
 
@@ -134,12 +134,12 @@ describe('ModuleController', () => {
   describe('getRecentModules', () => {
     it('should return an array of recent modules', async () => {
       mockModuleService.getRecentModules.mockResolvedValue(
-        mockRecentModulesCardResponseDto,
+        mockModulesCardResponseDto,
       );
 
       const result = await controller.getRecentModules();
 
-      expect(result).toEqual(mockRecentModulesCardResponseDto);
+      expect(result).toEqual(mockModulesCardResponseDto);
       expect(mockModuleService.getRecentModules).toHaveBeenCalledTimes(1);
     });
 
@@ -196,12 +196,12 @@ describe('ModuleController', () => {
   describe('getPopularModules', () => {
     it('should return an array of popular modules', async () => {
       mockModuleService.getPopularModules.mockResolvedValue(
-        mockRecentModulesCardResponseDto,
+        mockModulesCardResponseDto,
       );
 
       const result = await controller.getPopularModules();
 
-      expect(result).toEqual(mockRecentModulesCardResponseDto);
+      expect(result).toEqual(mockModulesCardResponseDto);
       expect(mockModuleService.getPopularModules).toHaveBeenCalledTimes(1);
     });
 
