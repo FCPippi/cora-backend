@@ -52,7 +52,9 @@ export class ModuleController {
   @Get('search')
   async searchModules(
     @Query('keyword') keyword: string,
+    @Query('age_group') ageGroup?: string,
   ): Promise<ModuleCardResponseDto[]> {
-    return await this.moduleService.searchModuleByKeyword(keyword);
+    const ages = ageGroup ? ageGroup.split(',').map(a => a.trim()) : undefined;
+    return await this.moduleService.searchModuleByKeyword(keyword, ages);
   }
 }
