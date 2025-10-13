@@ -125,12 +125,18 @@ export class ModuleService {
 
   async searchModuleByKeyword(
     keyword: string,
+    ageGroups?: string[],
   ): Promise<ModuleCardResponseDto[]> {
     const modulos = await this.prisma.module.findMany({
       where: {
-        OR: [
-          { title: { contains: keyword, mode: 'insensitive' } },
-          { sinopsys: { contains: keyword, mode: 'insensitive' } },
+        AND: [
+          {
+            OR: [
+              { title: { contains: keyword, mode: 'insensitive' } },
+              { sinopsys: { contains: keyword, mode: 'insensitive' } },
+            ],
+          },
+          ageGroups && ageGroups.length > 0 ? { age_group: { in: ageGroups } } : {},
         ],
       },
       select: {
